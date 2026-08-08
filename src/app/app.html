@@ -29,6 +29,14 @@
 
     </select>
 
+<label for="flightDate">Flight Date</label>
+
+<input id="flightDate" type="date" [(ngModel)]="flightDate">
+
+
+<label for="flightTime">Flight Time</label>
+
+<input id="flightTime" type="time" [(ngModel)]="flightTime">
 
     <button (click)="showRoute()">
       Show Route
@@ -37,21 +45,36 @@
 
     <!-- Uçuş bilgileri -->
 
-    <div class="flight-info">
-
-      <h3>✈️ Flight Information</h3>
-
-      <p>
-        <strong>Distance:</strong>
-        {{ mapComponent?.distanceKm }} km
-      </p>
-
-      <p>
-        <strong>Estimated Flight Time:</strong>
-        {{ mapComponent?.flightTime }}
-      </p>
-
-    </div>
+  <div class="flight-info">
+  
+    <h3>✈️ Flight Information</h3>
+  
+    <p>
+      <strong>Distance:</strong>
+      {{ mapComponent?.distanceKm }} km
+    </p>
+  
+    <p>
+      <strong>Estimated Flight Time:</strong>
+      {{ mapComponent?.flightTime }}
+    </p>
+  
+    <p>
+      <strong>Flight Direction:</strong>
+      {{ mapComponent?.flightBearing }}°
+    </p>
+  
+    <p>
+      <strong>☀️ Sun Direction:</strong>
+      {{ mapComponent?.sunAzimuth }}°
+    </p>
+  
+    <p>
+      <strong>🪑 Recommended Side:</strong>
+      {{ mapComponent?.sunSide }}
+    </p>
+  
+  </div>
 
   </aside>
 

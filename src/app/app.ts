@@ -26,12 +26,17 @@ export class App {
   selectedFrom = 'IST';
   selectedTo = 'FCO';
 
+  flightDate = '2026-08-08';
+  flightTime = '12:00';
+  
   showRoute(): void {
 
-    this.mapComponent.drawRoute(
-      this.selectedFrom,
-      this.selectedTo
-    );
+   this.mapComponent.drawRoute(
+  this.selectedFrom,
+  this.selectedTo,
+  this.flightDate,
+  this.flightTime
+);
 
   }
 }

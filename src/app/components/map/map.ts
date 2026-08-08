@@ -34,6 +34,12 @@ export class MapComponent implements AfterViewInit {
 
   flightTime = '';
 
+  sunAzimuth = 0;
+
+  sunSide = '';
+
+  flightBearing = 0;
+
 
   ngAfterViewInit(): void {
     this.initMap();
@@ -59,7 +65,9 @@ export class MapComponent implements AfterViewInit {
 
   drawRoute(
     fromCode: string,
-    toCode: string
+    toCode: string,
+    flightDate: string,
+    flightTime: string
   ): void {
 
     if (!this.map) {
@@ -101,6 +109,49 @@ export class MapComponent implements AfterViewInit {
       toAirport.latitude,
       toAirport.longitude
     ];
+
+
+    // Uçuş yönünü hesapla
+    this.flightBearing = this.calculateBearing(
+      fromAirport.latitude,
+      fromAirport.longitude,
+      toAirport.latitude,
+      toAirport.longitude
+    );
+
+
+    console.log(
+      'Flight bearing:',
+      this.flightBearing
+    );
+
+
+    // Güneş yönünü hesapla
+    this.sunAzimuth = this.calculateSunAzimuth(
+      fromAirport.latitude,
+      fromAirport.longitude,
+      flightDate,
+      flightTime
+    );
+
+
+    console.log(
+      'Sun azimuth:',
+      this.sunAzimuth
+    );
+
+
+    // Güneşin uçağın hangi tarafında olduğunu hesapla
+    this.sunSide = this.calculateSunSide(
+      this.flightBearing,
+      this.sunAzimuth
+    );
+
+
+    console.log(
+      'Sun side:',
+      this.sunSide
+    );
 
 
     // Mesafeyi hesapla
@@ -166,6 +217,7 @@ export class MapComponent implements AfterViewInit {
   }
 
 
+  // İki koordinat arasındaki mesafeyi hesaplar
   private calculateDistance(
     lat1: number,
     lon1: number,
@@ -205,6 +257,7 @@ export class MapComponent implements AfterViewInit {
   }
 
 
+  // Dereceyi radyana çevirir
   private toRadians(
     degrees: number
   ): number {
@@ -214,6 +267,7 @@ export class MapComponent implements AfterViewInit {
   }
 
 
+  // Tahmini uçuş süresini hesaplar
   private calculateFlightTime(
     distanceKm: number
   ): string {
@@ -239,6 +293,187 @@ export class MapComponent implements AfterViewInit {
   }
 
 
+  // Uçağın kalkıştan varışa doğru yönünü hesaplar
+  private calculateBearing(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ): number {
+
+    const startLat =
+      this.toRadians(lat1);
+
+    const endLat =
+      this.toRadians(lat2);
+
+    const deltaLon =
+      this.toRadians(
+        lon2 - lon1
+      );
+
+
+    const y =
+      Math.sin(deltaLon) *
+      Math.cos(endLat);
+
+
+    const x =
+      Math.cos(startLat) *
+      Math.sin(endLat) -
+      Math.sin(startLat) *
+      Math.cos(endLat) *
+      Math.cos(deltaLon);
+
+
+    let bearing =
+      Math.atan2(y, x) *
+      180 /
+      Math.PI;
+
+
+    bearing =
+      (bearing + 360) % 360;
+
+
+    return Math.round(bearing);
+
+  }
+
+
+  // Güneşin yaklaşık azimut açısını hesaplar
+  private calculateSunAzimuth(
+    latitude: number,
+    longitude: number,
+    date: string,
+    time: string
+  ): number {
+
+    const dateTime = new Date(
+      `${date}T${time}:00`
+    );
+
+
+    const dayOfYear = Math.floor(
+      (
+        Date.UTC(
+          dateTime.getFullYear(),
+          dateTime.getMonth(),
+          dateTime.getDate()
+        ) -
+        Date.UTC(
+          dateTime.getFullYear(),
+          0,
+          0
+        )
+      ) /
+      86400000
+    );
+
+
+    const hour =
+      dateTime.getHours() +
+      dateTime.getMinutes() / 60;
+
+
+    // Güneşin yaklaşık deklinasyonu
+    const declination =
+      23.44 *
+      Math.sin(
+        this.toRadians(
+          (360 / 365) *
+          (dayOfYear - 81)
+        )
+      );
+
+
+    // Yaklaşık yerel güneş zamanı
+    const solarTime =
+      hour +
+      longitude / 15;
+
+
+    const hourAngle =
+      15 *
+      (solarTime - 12);
+
+
+    const latRad =
+      this.toRadians(latitude);
+
+    const decRad =
+      this.toRadians(declination);
+
+    const hourAngleRad =
+      this.toRadians(hourAngle);
+
+
+    // Güneş yüksekliği
+    const altitude =
+      Math.asin(
+        Math.sin(latRad) *
+        Math.sin(decRad) +
+        Math.cos(latRad) *
+        Math.cos(decRad) *
+        Math.cos(hourAngleRad)
+      );
+
+
+    // Güneş azimutu
+    const azimuth =
+      Math.atan2(
+        Math.sin(hourAngleRad),
+        Math.cos(hourAngleRad) *
+        Math.sin(latRad) -
+        Math.tan(decRad) *
+        Math.cos(latRad)
+      );
+
+
+    let degrees =
+      azimuth * 180 / Math.PI + 180;
+
+
+    degrees =
+      (degrees + 360) % 360;
+
+
+    return Math.round(degrees);
+
+  }
+
+
+  // Güneşin uçağın hangi tarafında olduğunu hesaplar
+  private calculateSunSide(
+    flightBearing: number,
+    sunAzimuth: number
+  ): string {
+
+    let difference =
+      (sunAzimuth - flightBearing + 360) % 360;
+
+
+    if (difference > 180) {
+      difference -= 360;
+    }
+
+
+    if (difference > 10) {
+      return 'Right';
+    }
+
+
+    if (difference < -10) {
+      return 'Left';
+    }
+
+
+    return 'Front';
+
+  }
+
+
+  // Önceki rota ve marker'ları temizler
   private clearRoute(): void {
 
     this.markers.forEach(
