@@ -6,8 +6,6 @@ import {
 import * as L from 'leaflet';
 
 import { AIRPORTS } from '../../data/airports';
-import { Airport } from '../../models/airport';
-
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
@@ -16,7 +14,6 @@ L.Icon.Default.mergeOptions({
   iconUrl: '/marker-icon.png',
   shadowUrl: '/marker-shadow.png'
 });
-
 
 @Component({
   selector: 'app-map',
@@ -33,11 +30,13 @@ export class MapComponent implements AfterViewInit {
 
   private markers: L.Marker[] = [];
 
+  distanceKm = 0;
+
+  flightTime = '';
+
 
   ngAfterViewInit(): void {
-
     this.initMap();
-
   }
 
 
@@ -47,7 +46,6 @@ export class MapComponent implements AfterViewInit {
       [41.0082, 28.9784],
       5
     );
-
 
     L.tileLayer(
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -87,7 +85,6 @@ export class MapComponent implements AfterViewInit {
       );
 
       return;
-
     }
 
 
@@ -106,6 +103,22 @@ export class MapComponent implements AfterViewInit {
     ];
 
 
+    // Mesafeyi hesapla
+    this.distanceKm = this.calculateDistance(
+      fromAirport.latitude,
+      fromAirport.longitude,
+      toAirport.latitude,
+      toAirport.longitude
+    );
+
+
+    // Tahmini uçuş süresini hesapla
+    this.flightTime = this.calculateFlightTime(
+      this.distanceKm
+    );
+
+
+    // Kalkış marker
     const fromMarker = L.marker(from)
       .addTo(this.map)
       .bindPopup(
@@ -113,6 +126,7 @@ export class MapComponent implements AfterViewInit {
       );
 
 
+    // Varış marker
     const toMarker = L.marker(to)
       .addTo(this.map)
       .bindPopup(
@@ -126,6 +140,7 @@ export class MapComponent implements AfterViewInit {
     );
 
 
+    // Uçuş rotası
     this.routeLine = L.polyline(
       [from, to],
       {
@@ -135,6 +150,7 @@ export class MapComponent implements AfterViewInit {
     ).addTo(this.map);
 
 
+    // Haritayı iki noktayı gösterecek şekilde ayarla
     this.map.fitBounds(
       L.latLngBounds(
         [from, to]
@@ -146,6 +162,79 @@ export class MapComponent implements AfterViewInit {
 
 
     fromMarker.openPopup();
+
+  }
+
+
+  private calculateDistance(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ): number {
+
+    const earthRadius = 6371;
+
+    const dLat = this.toRadians(
+      lat2 - lat1
+    );
+
+    const dLon = this.toRadians(
+      lon2 - lon1
+    );
+
+
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(this.toRadians(lat1)) *
+      Math.cos(this.toRadians(lat2)) *
+      Math.sin(dLon / 2) ** 2;
+
+
+    const c =
+      2 * Math.atan2(
+        Math.sqrt(a),
+        Math.sqrt(1 - a)
+      );
+
+
+    return Math.round(
+      earthRadius * c
+    );
+
+  }
+
+
+  private toRadians(
+    degrees: number
+  ): number {
+
+    return degrees * Math.PI / 180;
+
+  }
+
+
+  private calculateFlightTime(
+    distanceKm: number
+  ): string {
+
+    const averageSpeed = 800;
+
+    const hours =
+      distanceKm / averageSpeed;
+
+
+    const wholeHours =
+      Math.floor(hours);
+
+
+    const minutes =
+      Math.round(
+        (hours - wholeHours) * 60
+      );
+
+
+    return `${wholeHours}h ${minutes}m`;
 
   }
 
