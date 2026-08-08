@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { MapComponent } from './components/map/map';
 import { AIRPORTS } from './data/airports';
+import { SeatMapComponent } from './components/seat-map/seat-map';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,8 @@ import { AIRPORTS } from './data/airports';
   imports: [
     CommonModule,
     FormsModule,
-    MapComponent
+    MapComponent,
+     SeatMapComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'

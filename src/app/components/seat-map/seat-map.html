@@ -1,0 +1,50 @@
+<div class="seat-container">
+
+    <h2>🪑 Seat Selection</h2>
+
+    <p>
+        ☀️ Recommended side:
+        <strong>{{ recommendedSide }}</strong>
+    </p>
+
+    @if (selectedSeat) {
+
+    <p class="selected-info">
+        💺 Selected Seat:
+        <strong>{{ selectedSeat }}</strong>
+    </p>
+
+    <p class="seat-message">
+        {{ seatMessage }}
+    </p>
+
+    } @else {
+
+    <p class="selected-info">
+        Please select a seat.
+    </p>
+
+    }
+
+    <div class="plane">
+
+        @for (row of rows; track row) {
+
+        <div class="seat-row">
+
+            @for (seat of seats; track seat) {
+
+            <button class="seat" [class.recommended]="isRecommended(row, seat)" [class.selected]="isSelected(row, seat)"
+                (click)="selectSeat(row, seat)">
+                {{ seat }}{{ row }}
+            </button>
+
+            }
+
+        </div>
+
+        }
+
+    </div>
+
+</div>
