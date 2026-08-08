@@ -1,1 +1,46 @@
-<app-map></app-map>
+<div class="container">
+
+  <aside class="sidebar">
+
+    <h2>✈ Flight Planner</h2>
+
+    <label for="from">From</label>
+
+    <select id="from" [(ngModel)]="selectedFrom">
+
+      <option *ngFor="let airport of airports" [value]="airport.code">
+
+        {{ airport.city }} - {{ airport.code }}
+
+      </option>
+
+    </select>
+
+
+    <label for="to">To</label>
+
+    <select id="to" [(ngModel)]="selectedTo">
+
+      <option *ngFor="let airport of airports" [value]="airport.code">
+
+        {{ airport.city }} - {{ airport.code }}
+
+      </option>
+
+    </select>
+
+
+    <button (click)="showRoute()">
+      Show Route
+    </button>
+
+  </aside>
+
+
+  <main class="map-area">
+
+    <app-map></app-map>
+
+  </main>
+
+</div>
