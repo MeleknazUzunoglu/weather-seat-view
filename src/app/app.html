@@ -1,102 +1,368 @@
-<h2>✈ Flight Planner</h2>
+<div class="app-shell">
 
-<label for="from">From</label>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
 
-<select id="from" [(ngModel)]="selectedFrom">
+    <div class="brand">
 
-  <option *ngFor="let airport of airports" [value]="airport.code">
-    {{ airport.city }} - {{ airport.code }}
-  </option>
+      <div class="brand-icon">
+        ✈️
+      </div>
 
-</select>
+      <div>
 
+        <h1>Flight View</h1>
 
-<label for="to">To</label>
+        <span>
+          Weather-adaptive seat planner
+        </span>
 
-<select id="to" [(ngModel)]="selectedTo">
+      </div>
 
-  <option *ngFor="let airport of airports" [value]="airport.code">
-    {{ airport.city }} - {{ airport.code }}
-  </option>
-
-</select>
-
-
-<label for="flightDate">
-  Flight Date
-</label>
-
-<input id="flightDate" type="date" [(ngModel)]="flightDate">
+    </div>
 
 
-<label for="flightTime">
-  Flight Time
-</label>
+    <!-- FLIGHT PLANNER -->
+    <section class="panel">
 
-<input id="flightTime" type="time" [(ngModel)]="flightTime">
+      <div class="section-title">
 
+        <span>✈️</span>
 
-<button (click)="showRoute()">
-  Show Route
-</button>
+        <h2>Flight Planner</h2>
 
-
-<!-- Uçuş bilgileri -->
-
-<h3>✈️ Flight Information</h3>
-
-<p>
-  <strong>Distance:</strong>
-  {{ mapComponent?.distanceKm }} km
-</p>
-
-<p>
-  <strong>Estimated Flight Time:</strong>
-  {{ mapComponent?.flightTime }}
-</p>
-
-<p>
-  <strong>Flight Direction:</strong>
-  {{ mapComponent?.flightBearing }}°
-</p>
-
-<p>
-  <strong>☀️ Sun Direction:</strong>
-  {{ mapComponent?.sunAzimuth }}°
-</p>
-
-<p>
-  <strong>🪑 Recommended Side:</strong>
-  {{ mapComponent?.sunSide }}
-</p>
+      </div>
 
 
-<!-- Hava durumu -->
+      <div class="field">
 
-<h3>🌤️ Weather Information</h3>
+        <label for="from">
+          From
+        </label>
 
-<p>
-  <strong>🌡️ Temperature:</strong>
-  {{ weatherTemperature }}°C
-</p>
+        <select id="from" [(ngModel)]="selectedFrom">
 
-<p>
-  <strong>☁️ Cloud Cover:</strong>
-  {{ weatherCloudCover }}%
-</p>
+          <option *ngFor="let airport of airports" [value]="airport.code">
 
-<p>
-  <strong>🌧️ Rain Chance:</strong>
-  {{ weatherRainChance }}%
-</p>
+            {{ airport.city }} — {{ airport.code }}
 
+          </option>
 
-<!-- Harita -->
+        </select>
 
-<app-map #mapComponent></app-map>
+      </div>
 
 
-<!-- Koltuk haritası -->
+      <div class="field">
 
-<app-seat-map [recommendedSide]="mapComponent?.sunSide || ''">
-</app-seat-map>
+        <label for="to">
+          To
+        </label>
+
+        <select id="to" [(ngModel)]="selectedTo">
+
+          <option *ngFor="let airport of airports" [value]="airport.code">
+
+            {{ airport.city }} — {{ airport.code }}
+
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="flightDate">
+          Flight Date
+        </label>
+
+        <input id="flightDate" type="date" [min]="today" [(ngModel)]="flightDate">
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="flightTime">
+          Departure Time
+        </label>
+
+        <input id="flightTime" type="time" [(ngModel)]="flightTime">
+
+      </div>
+
+
+      <button class="route-button" (click)="showRoute()">
+
+        <span>
+          Show Route
+        </span>
+
+        <span>
+          →
+        </span>
+
+      </button>
+
+    </section>
+
+
+    <!-- FLIGHT ANALYSIS -->
+    <section class="panel">
+
+      <div class="section-title">
+
+        <span>📊</span>
+
+        <h2>Flight Analysis</h2>
+
+      </div>
+
+
+      <div class="info-grid">
+
+        <div class="info-card">
+
+          <span class="info-icon">
+            📏
+          </span>
+
+          <div>
+
+            <small>
+              Distance
+            </small>
+
+            <strong>
+              {{ mapComponent?.distanceKm }} km
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="info-card">
+
+          <span class="info-icon">
+            ⏱️
+          </span>
+
+          <div>
+
+            <small>
+              Flight Time
+            </small>
+
+            <strong>
+              {{ mapComponent?.flightTime || '--' }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="info-card">
+
+          <span class="info-icon">
+            🧭
+          </span>
+
+          <div>
+
+            <small>
+              Direction
+            </small>
+
+            <strong>
+              {{ mapComponent?.flightBearing || 0 }}°
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="info-card recommendation">
+
+          <span class="info-icon">
+            🪑
+          </span>
+
+          <div>
+
+            <small>
+              Recommended Side
+            </small>
+
+            <strong>
+              {{ mapComponent?.sunSide || '—' }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- WEATHER -->
+    <section class="panel">
+
+      <div class="section-title">
+
+        <span>🌤️</span>
+
+        <h2>Weather</h2>
+
+      </div>
+
+
+      <div class="weather-grid">
+
+        <div class="weather-item">
+
+          <span>
+            🌡️
+          </span>
+
+          <div>
+
+            <small>
+              Temperature
+            </small>
+
+            <strong>
+              {{ weatherTemperature }}°C
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="weather-item">
+
+          <span>
+            ☁️
+          </span>
+
+          <div>
+
+            <small>
+              Cloud Cover
+            </small>
+
+            <strong>
+              {{ weatherCloudCover }}%
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="weather-item">
+
+          <span>
+            🌧️
+          </span>
+
+          <div>
+
+            <small>
+              Rain Chance
+            </small>
+
+            <strong>
+              {{ weatherRainChance }}%
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="weather-item">
+
+          <span>
+            ☀️
+          </span>
+
+          <div>
+
+            <small>
+              Sun Direction
+            </small>
+
+            <strong>
+              {{ mapComponent?.sunAzimuth || 0 }}°
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </aside>
+
+
+  <!-- MAP -->
+  <main class="map-container">
+
+    <div class="map-header">
+
+      <div>
+
+        <span class="map-label">
+          LIVE FLIGHT MAP
+        </span>
+
+        <h2>
+          {{ selectedFrom }}
+          →
+          {{ selectedTo }}
+        </h2>
+
+      </div>
+
+
+      <div class="status">
+
+        <span class="status-dot"></span>
+
+        Route Ready
+
+      </div>
+
+    </div>
+
+
+    <div class="map-wrapper">
+
+      <app-map #mapComponent>
+      </app-map>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<!-- SEAT MAP -->
+
+<section class="seat-section">
+
+  <app-seat-map [recommendedSide]="mapComponent?.sunSide || ''">
+  </app-seat-map>
+
+</section>

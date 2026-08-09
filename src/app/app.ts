@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
 import { WeatherService } from './services/weather.service';
+
 import { MapComponent } from './components/map/map';
 import { AIRPORTS } from './data/airports';
 import { SeatMapComponent } from './components/seat-map/seat-map';
@@ -32,6 +32,10 @@ export class App {
   flightDate = '2026-08-08';
   flightTime = '12:00';
 
+  // Bugünün tarihi
+  today = new Date().toISOString().split('T')[0];
+
+  // Hava durumu bilgileri
   weatherTemperature = 0;
   weatherCloudCover = 0;
   weatherRainChance = 0;
@@ -41,6 +45,26 @@ export class App {
   ) {}
 
   showRoute(): void {
+
+    // Geçmiş tarih kontrolü
+    if (this.flightDate < this.today) {
+
+      alert(
+        'Geçmiş bir tarih için uçuş planlanamaz.'
+      );
+
+      return;
+    }
+
+    // Aynı havalimanı kontrolü
+    if (this.selectedFrom === this.selectedTo) {
+
+      alert(
+        'Kalkış ve varış havalimanı aynı olamaz.'
+      );
+
+      return;
+    }
 
     // Haritada rotayı göster
     this.mapComponent.drawRoute(
@@ -56,7 +80,11 @@ export class App {
     );
 
     if (!airport) {
-      console.error('Airport bulunamadı!');
+
+      console.error(
+        'Airport bulunamadı!'
+      );
+
       return;
     }
 
@@ -66,19 +94,14 @@ export class App {
       10
     );
 
-    // Hava durumu API'sine istek gönder
+    // Hava durumu API'sinden bilgi al
     this.weatherService.getWeather(
       airport.latitude,
       airport.longitude,
       this.flightDate
     ).subscribe({
 
-      next: (data) => {
-
-        console.log(
-          '🌤️ WEATHER API ÇALIŞTI:',
-          data
-        );
+      next: (data: any) => {
 
         this.weatherTemperature =
           data.hourly.temperature_2m[hourIndex];
@@ -89,15 +112,18 @@ export class App {
         this.weatherRainChance =
           data.hourly.precipitation_probability[hourIndex];
 
+        console.log(
+          '🌤️ Weather data:',
+          data
+        );
       },
 
       error: (error) => {
 
         console.error(
-          '❌ WEATHER API HATASI:',
+          '❌ Weather API error:',
           error
         );
-
       }
 
     });
