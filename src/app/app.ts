@@ -32,10 +32,12 @@ export class App {
   flightDate = '2026-08-08';
   flightTime = '12:00';
 
-  // Bugünün tarihi
   today = new Date().toISOString().split('T')[0];
 
-  // Hava durumu bilgileri
+  // Flight status
+  flightStatus = '';
+
+  // Weather
   weatherTemperature = 0;
   weatherCloudCover = 0;
   weatherRainChance = 0;
@@ -66,7 +68,11 @@ export class App {
       return;
     }
 
-    // Haritada rotayı göster
+    // Uçuş durumunu hesapla
+    this.flightStatus =
+      this.calculateFlightStatus();
+
+    // Haritayı güncelle
     this.mapComponent.drawRoute(
       this.selectedFrom,
       this.selectedTo,
@@ -74,7 +80,7 @@ export class App {
       this.flightTime
     );
 
-    // Seçilen kalkış havalimanını bul
+    // Kalkış havalimanını bul
     const airport = this.airports.find(
       airport => airport.code === this.selectedFrom
     );
@@ -88,13 +94,13 @@ export class App {
       return;
     }
 
-    // Seçilen saati al
+    // Saat bilgisini al
     const hourIndex = parseInt(
       this.flightTime.split(':')[0],
       10
     );
 
-    // Hava durumu API'sinden bilgi al
+    // Hava durumunu getir
     this.weatherService.getWeather(
       airport.latitude,
       airport.longitude,
@@ -124,10 +130,31 @@ export class App {
           '❌ Weather API error:',
           error
         );
+
       }
 
     });
-
   }
 
+  private calculateFlightStatus(): string {
+
+    const hour = parseInt(
+      this.flightTime.split(':')[0],
+      10
+    );
+
+    if (hour >= 6 && hour < 10) {
+      return '🌅 Morning Flight';
+    }
+
+    if (hour >= 10 && hour < 18) {
+      return '☀️ Day Flight';
+    }
+
+    if (hour >= 18 && hour < 21) {
+      return '🌇 Evening Flight';
+    }
+
+    return '🌙 Night Flight';
+  }
 }

@@ -1,6 +1,7 @@
 <div class="app-shell">
 
   <!-- SIDEBAR -->
+
   <aside class="sidebar">
 
     <div class="brand">
@@ -23,6 +24,7 @@
 
 
     <!-- FLIGHT PLANNER -->
+
     <section class="panel">
 
       <div class="section-title">
@@ -109,7 +111,44 @@
     </section>
 
 
+    <!-- FLIGHT STATUS -->
+
+    <section class="panel">
+
+      <div class="section-title">
+
+        <span>🛫</span>
+
+        <h2>Flight Status</h2>
+
+      </div>
+
+
+      <div class="flight-status">
+
+        <div class="status-icon">
+          ✈️
+        </div>
+
+        <div>
+
+          <small>
+            Current Flight
+          </small>
+
+          <strong>
+            {{ flightStatus || 'Select flight details' }}
+          </strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
     <!-- FLIGHT ANALYSIS -->
+
     <section class="panel">
 
       <div class="section-title">
@@ -186,7 +225,7 @@
         </div>
 
 
-        <div class="info-card recommendation">
+        <div class="info-card">
 
           <span class="info-icon">
             🪑
@@ -212,6 +251,7 @@
 
 
     <!-- WEATHER -->
+
     <section class="panel">
 
       <div class="section-title">
@@ -316,6 +356,7 @@
 
 
   <!-- MAP -->
+
   <main class="map-container">
 
     <div class="map-header">
