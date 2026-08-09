@@ -22,12 +22,16 @@
 </select>
 
 
-<label for="flightDate">Flight Date</label>
+<label for="flightDate">
+  Flight Date
+</label>
 
 <input id="flightDate" type="date" [(ngModel)]="flightDate">
 
 
-<label for="flightTime">Flight Time</label>
+<label for="flightTime">
+  Flight Time
+</label>
 
 <input id="flightTime" type="time" [(ngModel)]="flightTime">
 
@@ -67,6 +71,26 @@
 </p>
 
 
+<!-- Hava durumu -->
+
+<h3>🌤️ Weather Information</h3>
+
+<p>
+  <strong>🌡️ Temperature:</strong>
+  {{ weatherTemperature }}°C
+</p>
+
+<p>
+  <strong>☁️ Cloud Cover:</strong>
+  {{ weatherCloudCover }}%
+</p>
+
+<p>
+  <strong>🌧️ Rain Chance:</strong>
+  {{ weatherRainChance }}%
+</p>
+
+
 <!-- Harita -->
 
 <app-map #mapComponent></app-map>
@@ -74,4 +98,5 @@
 
 <!-- Koltuk haritası -->
 
-<app-seat-map [recommendedSide]="mapComponent?.sunSide || ''"></app-seat-map>
+<app-seat-map [recommendedSide]="mapComponent?.sunSide || ''">
+</app-seat-map>
